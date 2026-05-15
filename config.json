@@ -1,0 +1,22 @@
+{
+    "high_risk_ports": {
+        "21": "FTP",
+        "22": "SSH",
+        "23": "Telnet",
+        "25": "SMTP",
+        "53": "DNS",
+        "80": "HTTP",
+        "443": "HTTPS",
+        "135": "MS-RPC",
+        "139": "NetBIOS",
+        "445": "SMB",
+        "1433": "MSSQL",
+        "2375": "Docker",
+        "3306": "MySQL",
+        "3389": "RDP",
+        "4444": "Metasploit",
+        "5900": "VNC",
+        "6379": "Redis",
+        "27017": "MongoDB"
+    }
+}
