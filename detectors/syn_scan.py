@@ -56,26 +56,42 @@ class SynScanDetector(BaseDetector):
                 else:
                     aggregated_ports[dst_port] = count
 
+
         top_ports = sorted(aggregated_ports.items(), key=lambda x: x[1], reverse=True)[:10] 
         top_ports_formatted = [f"{dst_port}/{HIGH_RISK_PORTS.get(dst_port, 'Unknown')}: {count} hits" for dst_port, count in top_ports]
         top_ports_str = "\n".join(top_ports_formatted)
+
         risky_hits = {port: count for port, count in aggregated_ports.items() if port in HIGH_RISK_PORTS}
-        risky_hits_formatted = [f"{dst_port}/{HIGH_RISK_PORTS.get(dst_port, 'Unknown')}: {count} hits" for dst_port, count in risky_hits.items()]
+        risky_hits_sorted = sorted(risky_hits.items(), key=lambda x: x[1], reverse=True)
+        risky_hits_formatted = [f"{dst_port}/{HIGH_RISK_PORTS.get(dst_port, 'Unknown')}: {count} hits" for dst_port, count in risky_hits_sorted]
         risky_hits_str = "\n".join(risky_hits_formatted)
 
+        sorted_ips_formatted = []
+        sorted_ips = sorted(syn_counts.items(), key=lambda x: len(x[1]), reverse=True)
+        for ip, ports in sorted_ips[:10]:
+            sorted_ips_formatted.append(f"\n {ip} -> {len(ports)} ports")
+            sorted_ips_str = "".join(sorted_ips_formatted)
+        
         findings.append({
             "Severity": "INFO",
-            "Description": "SYN Scan Summary",
-            "Detail": f"\n[!]Top ports scanned: \n\n{top_ports_str}, \n\n[!]High risk ports: \n\n{risky_hits_str}, \n\n[!]Top Malicious IP's: \n\n ",
+            "Description": "SYN Scan Summary:",
+            "Detail": f"\n[!] {len(syn_counts)} Unique scanning IP's\n[!] Top 10 by distinct ports probed:\n {sorted_ips_str}\n\n[!]Top ports scanned: \n\n{top_ports_str}, \n\n[!]High risk ports: \n\n{risky_hits_str}, \n\n[!]Malicious IP's: \n\n",
             "src": src
         })
         
         for src_ip, port_counts in syn_counts.items():
             if len(port_counts) >= self.threshold:
+                risky_ports = {port: count for port, count in port_counts.items() if port in HIGH_RISK_PORTS}
+                risky_ports_sorted = sorted(risky_ports.items(), key= lambda x: x[1], reverse=True)
+                risky_ports_formatted = [f"{dst_port}/{HIGH_RISK_PORTS.get(dst_port, 'Unknown')}: {count} hits" for dst_port, count in risky_ports_sorted]
+                if not risky_ports_formatted:
+                    risky_ports_str = "None Detected"
+                else:
+                    risky_ports_str = "\n".join(risky_ports_formatted)
                 findings.append({
                     "Severity": "HIGH",
                     "Description": f"SYN scan detected from {src_ip}",
-                    "Detail": f"Probed {len(port_counts)} distinct ports\n", 
+                    "Detail": f"Probed {len(port_counts)} distinct ports\nHigh Risk Ports:\n{risky_ports_str}\n", 
                     "src": src_ip
                 })
 

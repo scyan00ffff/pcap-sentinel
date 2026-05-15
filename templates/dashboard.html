@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>pcap-sentinel dashboard</title>
+</head>
+<body>
+    <h1>pcap-sentinel</h1>
+    <h2>Findings:</h2>
+    <table border="1">
+        <tr>
+            <th>Severity</th>
+            <th>Description</th>
+            <th>Detail</th>
+        </tr>
+        {% for finding in findings %}
+        <tr>
+            <td>{{ finding['Severity'] }}</td>
+            <td>{{ finding['Description'] }}</td>
+            <td>{{ finding['Detail'] }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
+

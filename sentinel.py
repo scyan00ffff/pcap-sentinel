@@ -25,8 +25,8 @@ def run(pcap_path: str):
             print(f"[!] {len(findings)} finding(s) from {name}:")
             
             for f in findings:
-                print(f"[{f['Severity']}]")
-                print(f"[{f['Description']}")
+                print(f"\n[{f['Severity']}]")
+                print(f"{f['Description']}")
                 print(f"{f['Detail']}")
 
         else:
@@ -54,4 +54,7 @@ if __name__ == "__main__": #only true when file ran directly not imported
 
     args = parser.parse_args()
 
-    run(args.pcap)
+    all_findings = run(args.pcap)
+
+    from report import start_server
+    start_server(all_findings)

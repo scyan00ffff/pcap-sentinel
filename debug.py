@@ -1,7 +1,7 @@
 from scapy.all import rdpcap
 from scapy.layers.inet import IP, TCP
 
-packets = rdpcap("/home/reuben/Desktop/pcap files/custB.pcap")  # adjust path if needed
+packets = rdpcap("C:/Users/reube/Documents/Uni/custB.pcap")  # adjust path if needed
 
 syn_counts = {}
 
