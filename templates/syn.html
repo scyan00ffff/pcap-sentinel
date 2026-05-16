@@ -66,6 +66,17 @@
     {% endif %}
 </div>
 
+<div class="charts">
+    <div class="chart-card">
+        <h3>Top 10 Ports Scanned</h3>
+        <canvas id="portsChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Top 10 Scanning IPs</h3>
+        <canvas id="ipsChart"></canvas>
+    </div>
+</div>
+
 <div class="findings-table">
     <h2>Findings:</h2>
     <table>
@@ -126,4 +137,16 @@ function toggleDetail(row) {
     }
 }
 </script>
+
+<script>
+    const highRiskPortNums = {{ high_risk_ports | tojson }};
+    const mediumRiskPortNums = {{ medium_risk_ports | tojson }};
+    const portNums = {{ summary.top_ports_raw | map(attribute=0) | list | tojson if summary else [] }};
+    const portLabels = {{ summary.top_ports_labels | tojson if summary else [] }};
+    const portCounts = {{ summary.top_ports_raw | map(attribute=1) | list | tojson if summary else [] }};
+    const ipLabels = {{ summary.top_ips_labels | tojson if summary else [] }};
+    const ipCounts = {{ summary.top_ips_counts | tojson if summary else [] }};
+</script>
+<script src="{{ url_for('static', filename='charts.js') }}"></script>
+
 {% endblock %}

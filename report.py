@@ -39,7 +39,9 @@ def syn():
     return render_template("syn.html",
                             findings = high_low_findings,
                             summary=summary,
-                            current_page = "syn")
+                            current_page = "syn",
+                            high_risk_ports =list(summary['high_risk_port_nums']) if summary else [],
+                            medium_risk_ports = list(summary['medium_risk_port_nums']) if summary else [])
 
 @app.route("/credential-detection")
 def credential_detection():
