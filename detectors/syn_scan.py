@@ -75,10 +75,14 @@ class SynScanDetector(BaseDetector):
         findings.append({
             "Severity": "INFO",
             "Description": "SYN Scan Summary:",
-            "Detail": f"\n[!] {len(syn_counts)} Unique scanning IP's\n[!] Top 10 by distinct ports probed:\n {sorted_ips_str}\n\n[!]Top ports scanned: \n\n{top_ports_str}, \n\n[!]High risk ports: \n\n{risky_hits_str}, \n\n[!]Malicious IP's: \n\n",
-            "src": src
+            "unique_ips": len(syn_counts),
+            "top_ips": sorted_ips_formatted,
+            "top_ports": top_ports_formatted,
+            "risky_ports": risky_hits_formatted,
+            "src": None
         })
         
+
         for src_ip, port_counts in syn_counts.items():
             if len(port_counts) >= self.threshold:
                 risky_ports = {port: count for port, count in port_counts.items() if port in HIGH_RISK_PORTS}
@@ -86,12 +90,17 @@ class SynScanDetector(BaseDetector):
                 risky_ports_formatted = [f"{dst_port}/{HIGH_RISK_PORTS.get(dst_port, 'Unknown')}: {count} hits" for dst_port, count in risky_ports_sorted]
                 if not risky_ports_formatted:
                     risky_ports_str = "None Detected"
+                    severity = "LOW"
                 else:
                     risky_ports_str = "\n".join(risky_ports_formatted)
+                    severity = "HIGH"
                 findings.append({
-                    "Severity": "HIGH",
+                    "Severity": severity,
                     "Description": f"SYN scan detected from {src_ip}",
-                    "Detail": f"Probed {len(port_counts)} distinct ports\nHigh Risk Ports:\n{risky_ports_str}\n", 
+                    "ports_probed": len(port_counts),
+                    "risky_ports_count": len(risky_ports_formatted),
+                    "risky_ports_list": risky_ports_formatted,
+                    #"Detail": f"Probed {len(port_counts)} distinct ports\n Number of risky ports: {len(risky_ports_formatted)}\nHigh Risk Ports:\n{risky_ports_str}\n", 
                     "src": src_ip
                 })
 

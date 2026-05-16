@@ -27,7 +27,13 @@ def run(pcap_path: str):
             for f in findings:
                 print(f"\n[{f['Severity']}]")
                 print(f"{f['Description']}")
-                print(f"{f['Detail']}")
+                if 'Detail' in f:
+                    print(f"{f['Detail']}")
+                elif 'ports_probed' in f:
+                    print(f"Probed {f['ports_probed']} distinct ports")
+                    print(f"Risky ports hit: {f['risky_ports_count']}")
+                else:
+                    print("See dashboard for summary")
 
         else:
             print(f"[+] No findings from {name}.")
