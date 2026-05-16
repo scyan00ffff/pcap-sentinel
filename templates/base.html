@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>pcap-sentinel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="header">
+        <h1>pcap-sentinel</h1>
+    </div>
+    <div class="page-wrapper">
+        <div class="sidebar">
+            <h3>Navigation</h3>
+            <a href="/" class="filter-btn {% if current_page == 'overview' %}active{% endif %}">🏠 Overview</a>
+            <hr class="sidebar-divider">
+            <h3>Scanners</h3>
+            <a href="/syn" class="filter-btn {% if current_page == 'syn' %}active{% endif %}">🔍 SYN Scan</a>
+            <a href="/credential-detection" class="filter-btn {% if current_page == 'credential' %}active{% endif %}">🔑 Credential Detection</a>
+            <a href="/data-exfiltration" class="filter-btn {% if current_page == 'data' %}active{% endif %}">📤 Data Exfiltration</a>
+            <a href="/dns-tunnelling" class="filter-btn {% if current_page == 'dns' %}active{% endif %}">🌐 DNS Tunnelling</a>
+            <a href="/brute-force" class="filter-btn {% if current_page == 'bruteforce' %}active{% endif %}">🔓 Brute Force</a>
+            <a href="/anomolous-traffic" class="filter-btn {% if current_page == 'anomolous' %}active{% endif %}">⚠️ Anomolous Traffic</a>
+            <a href="/threat-intel" class="filter-btn {% if current_page == 'threat' %}active{% endif %}">🛡️ Threat Intel</a>
+            <hr class="sidebar-divider">
+            <h3>Live</h3>
+            <a href="/live" class="filter-btn {% if current_page == 'live' %}active{% endif %}">📡 Live Monitor</a>
+        </div>
+        <div class="main-dashboard">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="page-title">Overview Dashboard</h2>
+<div class="summary-cards">
+    <div class="card">
+        <h3>Total Findings</h3>
+        <p class="card-number">{{ total }}</p>
+    </div>
+    <div class="card">
+        <h3>High Severity <span class="tooltip-icon" title="IP scanned 50+ ports and targeted high risk services such as SSH, RDP or SMB">?</span></h3>
+        <p class="card-number high">{{ high }}</p>
+    </div>
+    <div class="card">
+        <h3>Medium Severity <span class="tooltip-icon" title="IP scanned 50+ ports and targeted medium risk services such as development servers or alternative HTTP ports">?</span></h3>
+        <p class="card-number medium">{{ medium }}</p>
+    </div>
+    <div class="card">
+        <h3>Low Severity <span class="tooltip-icon" title="IP scanned 50+ ports but only targeted unknown or low risk ports">?</span></h3>
+        <p class="card-number low">{{ low }}</p>
+    </div>
+    <div class="card">
+        <h3>Scanners Run</h3>
+        <p class="card-number">1</p>
+    </div>
+</div>
+<div class="charts">
+    <div class="chart-card">
+        <h3>Severity Breakdown</h3>
+        <canvas id="severityChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Top 10 Ports Scanned</h3>
+        <canvas id="portsChart"></canvas>
+    </div>
+</div>
+
+
+<script>
+    const high = {{ high }};
+    const medium = {{ medium }};
+    const low = {{ low }};
+    {% if summary %}
+    const highRiskPortNums = {{ high_risk_ports | tojson }};
+    const mediumRiskPortNums = {{ medium_risk_ports | tojson }};
+    const portNums = {{ summary.top_ports_raw | map(attribute=0) | list | tojson if summary else [] }};
+    const portLabels = {{ summary.top_ports_labels | tojson }};
+    const portCounts = {{ summary.top_ports_raw | map(attribute=1) | list | tojson }};
+    {% else %}
+    const highRiskPortNums = [];
+    const mediumRiskPortNums = [];
+    const portNums = [];
+    const portLabels = [];
+    const portCounts = [];
+    {% endif %}
+</script>
+<script src="{{ url_for('static', filename='charts.js') }}"></script>
+
+{% endblock %}

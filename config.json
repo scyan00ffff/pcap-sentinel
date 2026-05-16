@@ -6,7 +6,7 @@
         "25": "SMTP",
         "53": "DNS",
         "80": "HTTP",
-        "443": "HTTPS",
+  
         "135": "MS-RPC",
         "139": "NetBIOS",
         "445": "SMB",
@@ -18,5 +18,19 @@
         "5900": "VNC",
         "6379": "Redis",
         "27017": "MongoDB"
-    }
+    },
+
+
+        "medium_risk_ports": {
+            "8080": "HTTP-Alt",
+            "8443": "HTTPS-Alt",
+            "2376": "Docker-TLS",
+            "8888": "HTTP-Dev",
+            "9090": "HTTP-Alt",
+            "3000": "Dev-Server",
+            "5000": "Dev-Server",
+            "9200": "Elasticsearch",
+            "6380": "Redis-Alt",
+            "443": "HTTPS"
+        }
 }

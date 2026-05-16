@@ -3,11 +3,13 @@ from .base import BaseDetector
 import json
 
 HIGH_RISK_PORTS = {}
+MEDIUM_RISK_PORTS = {}
 
 try:
     with open("config.json", "r") as f:
         config = json.load(f)
     HIGH_RISK_PORTS =  {int(k): v for k, v in config["high_risk_ports"].items()}
+    MEDIUM_RISK_PORTS = {int(k): v for k, v in config["medium_risk_ports"].items()}
 except FileNotFoundError:
     HIGH_RISK_PORTS = {
         21: "FTP",
@@ -15,6 +17,17 @@ except FileNotFoundError:
         23: "Telnet",
         80: "HTTP",
         443: "HTTPS"
+    }
+    MEDIUM_RISK_PORTS = {
+        8080: "HTTP-Alt",
+        8443: "HTTPS-Alt",
+        2376: "Docker-TLS",
+        8888: "HTTP-Dev",
+        9090: "HTTP-Alt",
+        3000: "Dev-Server",
+        5000: "Dev-Server",
+        9200: "Elasticsearch",
+        6380: "Redis-Alt"
     }
 
 #print(f"[DEBUG] Loaded {len(HIGH_RISK_PORTS)} high risk ports")
@@ -59,6 +72,7 @@ class SynScanDetector(BaseDetector):
 
         top_ports = sorted(aggregated_ports.items(), key=lambda x: x[1], reverse=True)[:10] 
         top_ports_formatted = [f"{dst_port}/{HIGH_RISK_PORTS.get(dst_port, 'Unknown')}: {count} hits" for dst_port, count in top_ports]
+        top_ports_labels = [f"{port}/{HIGH_RISK_PORTS.get(port, MEDIUM_RISK_PORTS.get(port, 'Unknown'))}" for port, count in top_ports]
         top_ports_str = "\n".join(top_ports_formatted)
 
         risky_hits = {port: count for port, count in aggregated_ports.items() if port in HIGH_RISK_PORTS}
@@ -78,7 +92,11 @@ class SynScanDetector(BaseDetector):
             "unique_ips": len(syn_counts),
             "top_ips": sorted_ips_formatted,
             "top_ports": top_ports_formatted,
+            "top_ports_raw": top_ports,
+            "top_ports_labels": top_ports_labels,
             "risky_ports": risky_hits_formatted,
+            "high_risk_port_nums": list(HIGH_RISK_PORTS.keys()),
+            "medium_risk_port_nums": list(MEDIUM_RISK_PORTS.keys()),
             "src": None
         })
         
@@ -88,19 +106,24 @@ class SynScanDetector(BaseDetector):
                 risky_ports = {port: count for port, count in port_counts.items() if port in HIGH_RISK_PORTS}
                 risky_ports_sorted = sorted(risky_ports.items(), key= lambda x: x[1], reverse=True)
                 risky_ports_formatted = [f"{dst_port}/{HIGH_RISK_PORTS.get(dst_port, 'Unknown')}: {count} hits" for dst_port, count in risky_ports_sorted]
-                if not risky_ports_formatted:
-                    risky_ports_str = "None Detected"
-                    severity = "LOW"
-                else:
-                    risky_ports_str = "\n".join(risky_ports_formatted)
+                medium_ports = {port: count for port, count in port_counts.items() if port in MEDIUM_RISK_PORTS}
+                medium_ports_sorted = sorted(medium_ports.items(), key=lambda x: x[1], reverse=True)
+                medium_ports_formatted = [f"{dst_port}/{MEDIUM_RISK_PORTS.get(dst_port, 'Unkown')}: {count} hits" for dst_port, count in medium_ports_sorted]
+                if risky_ports_formatted:
                     severity = "HIGH"
+                elif medium_ports_formatted:
+                    severity = "MEDIUM"
+                    risky_ports_str = "None Detected"
+                else:
+                    severity = "LOW"
+                    risky_ports_str = "None Detected"
                 findings.append({
                     "Severity": severity,
                     "Description": f"SYN scan detected from {src_ip}",
                     "ports_probed": len(port_counts),
                     "risky_ports_count": len(risky_ports_formatted),
                     "risky_ports_list": risky_ports_formatted,
-                    #"Detail": f"Probed {len(port_counts)} distinct ports\n Number of risky ports: {len(risky_ports_formatted)}\nHigh Risk Ports:\n{risky_ports_str}\n", 
+                    "medium_ports_list": medium_ports_formatted,
                     "src": src_ip
                 })
 
