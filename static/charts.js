@@ -56,4 +56,34 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    const ipsCanvas = document.getElementById('ipsChart');
+    if (ipsCanvas) {
+        const ipsCtx = ipsCanvas.getContext('2d');
+        new Chart(ipsCtx, {
+            type: 'bar',
+            data: {
+                labels: ipLabels,
+                datasets: [{
+                    label: 'Ports Probed',
+                    data: ipCounts,
+                    backgroundColor: '#2d7dd2'
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                    }
+                }
+            }
+        });
+    }
 });

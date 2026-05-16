@@ -97,9 +97,10 @@ class SynScanDetector(BaseDetector):
             "risky_ports": risky_hits_formatted,
             "high_risk_port_nums": list(HIGH_RISK_PORTS.keys()),
             "medium_risk_port_nums": list(MEDIUM_RISK_PORTS.keys()),
-            "top_ips_raw": sorted_ips[:10],
-            "top_ips_labels": [ip for ip, _ in sorted_ips[:10]],
-            "top_ips_counts": [len(ports) for _, ports in sorted_ips[:10]],
+            "top_ips_raw": sorted_ips[:5],
+            "top_ips_labels": [ip for ip, _ in sorted_ips[:5]],
+            "top_ips_counts": [len(ports) for _, ports in sorted_ips[:5]],
+            "scanner": "SynScan",
             "src": None
         })
         
@@ -127,6 +128,7 @@ class SynScanDetector(BaseDetector):
                     "risky_ports_count": len(risky_ports_formatted),
                     "risky_ports_list": risky_ports_formatted,
                     "medium_ports_list": medium_ports_formatted,
+                    "scanner": "SynScan",
                     "src": src_ip
                 })
 
