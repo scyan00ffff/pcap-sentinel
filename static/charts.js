@@ -86,4 +86,59 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    const scannerCanvas = document.getElementById('scannerChart');
+    if (scannerCanvas) {
+        const scannerCtx = scannerCanvas.getContext('2d');
+        new Chart(scannerCtx, {
+            type: 'doughnut',
+            data: {
+                labels: scannerLabels,
+                datasets: [{
+                    data: scannerData,
+                    backgroundColor: ['#2d7dd2', '#a00817', 'rgb(201, 111, 9)', 'rgb(1, 94, 1)']
+
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    }
+
+    const threatCanvas = document.getElementById('threatChart');
+    if (threatCanvas) {
+        const threatCtx = threatCanvas.getContext('2d');
+        new Chart(threatCtx, {
+            type: 'bar',
+            data: {
+                labels: threatLabels,
+                datasets: [{
+                    label: 'Threat Score',
+                    data: threatScores,
+                    backgroundColor: threatColours
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100
+                    }
+                }
+            }
+        });
+    }
 });

@@ -29,6 +29,14 @@
         <h3>Severity Breakdown</h3>
         <canvas id="severityChart"></canvas>
     </div>
+    <div class="chart-card">
+        <h3>Findings by Scanner</h3>
+        <canvas id="scannerChart"></canvas>
+    </div>
+    <div class="chart-card" style="flex: 2; min-width: 500px;">
+        <h3>Top 10 IP Threat Scores</h3>
+        <canvas id="threatChart"></canvas>
+    </div>
 </div>
 
 
@@ -42,6 +50,11 @@
     const portNums = {{ summary.top_ports_raw | map(attribute=0) | list | tojson if summary else [] }};
     const portLabels = {{ summary.top_ports_labels | tojson }};
     const portCounts = {{ summary.top_ports_raw | map(attribute=1) | list | tojson }};
+    const scannerLabels = {{ scanner_counts.keys() | list | tojson }};
+    const scannerData = {{ scanner_counts.values() | list | tojson }};
+    const threatLabels = {{ threat_labels | tojson }};
+    const threatScores = {{ threat_scores_data | tojson }};
+    const threatColours = {{ threat_colours | tojson }};
     {% else %}
     const highRiskPortNums = [];
     const mediumRiskPortNums = [];

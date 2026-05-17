@@ -1,4 +1,6 @@
 from flask import Flask, render_template 
+from collections import Counter 
+from collections import defaultdict
 
 app = Flask(__name__)
 
@@ -20,6 +22,35 @@ def overview():
     high_risk_ports = list(summary.get('high_risk_port_nums', [])) if summary else []
     medium_risk_ports = list(summary.get('medium_risk_port_nums', [])) if summary else []
 
+    #counts the results per scanner 
+
+    scanner_counts = Counter(f.get('scanner') for f in findings_data if f.get('scanner') and f.get('Severity') != 'INFO')
+
+    #ip severity score calculator 
+
+    severity_points = {"HIGH": 10, "MEDIUM": 5, "LOW":1}
+    threat_scores = defaultdict(int)
+    threat_highest_severity = {}
+
+    for f in findings_data:
+        src = f.get('src')
+        severity = f.get('Severity')
+        if src and severity in severity_points:
+            threat_scores[src] += severity_points[severity]
+            current = threat_highest_severity.get(src, 'LOW')
+            if severity == 'HIGH' or (severity == 'MEDIUM' and current == 'LOW'):
+                threat_highest_severity[src] = severity
+
+    top_threats = sorted(threat_scores.items(), key=lambda x: x[1], reverse=True)[:10]
+    threat_labels = [ip for ip, _ in top_threats]
+    threat_scores_data = [score for _, score in top_threats]
+    threat_colours = [
+        '#a00817' if threat_highest_severity.get(ip) == 'HIGH'
+        else 'rgb(201, 111, 9)' if threat_highest_severity.get(ip) == 'MEDIUM'
+        else 'rgb(1, 94, 1)'
+        for ip in threat_labels
+    ]
+
     return render_template("overview.html",
                            current_page="overview",
                            total = total,
@@ -28,7 +59,11 @@ def overview():
                            low = low,
                            summary = summary,
                            high_risk_ports = high_risk_ports,
-                           medium_risk_ports = medium_risk_ports
+                           medium_risk_ports = medium_risk_ports,
+                           scanner_counts = scanner_counts,
+                           threat_labels = threat_labels,
+                           threat_scores_data = threat_scores_data,
+                           threat_colours = threat_colours
                            )
 
 @app.route("/syn")
