@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="processing-container">
+    <h2>Analysing PCAP...</h2>
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    <p id="progress-label">Starting Analysis...</p>
+    <p id="progress-fraction"></p>
+</div>
+
+{% endblock %}

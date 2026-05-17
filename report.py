@@ -1,11 +1,77 @@
-from flask import Flask, render_template 
+from flask import Flask, render_template, request, jsonify 
 from collections import Counter 
 from collections import defaultdict
+import os 
+from analysis import run 
+import progress as progress_module 
+import threading 
 
 app = Flask(__name__)
 
 findings_data = []
+current_pcap_path = None
 
+#uploads pcap file to the program from the webpage
+@app.route("/upload", methods=["POST"])
+def upload():
+    global findings_data
+    global current_pcap_path
+    print("[*] Upload route called")
+
+    if 'file' not in request.files:
+        return jsonify({"success": False, "error": "No File Selected"})
+    
+    file = request.files['file']
+
+    if file.filename == '':
+        return jsonify({"success": False, "error": "No File Selected"})
+    
+    temp_path = os.path.join("temp", file.filename)
+    os.makedirs("temp", exist_ok=True)
+    file.save(temp_path)
+    current_pcap_path = temp_path
+
+
+    progress_module.reset()
+    progress_module.update_progress("Loading packets...", 0, 1)
+
+
+    def analyse():
+        global findings_data
+        findings_data = run(temp_path)
+
+    threading.Thread(target=analyse).start()
+
+    return jsonify({"success": True})
+
+#rescans the currently loaded pcap file 
+@app.route("/rescan", methods=['POST'])
+def rescan():
+    global findings_data
+
+    if current_pcap_path is None:
+        return jsonify({"success": False, "error": "No file loaded"})
+    
+    progress_module.reset()
+    progress_module.update_progress("Loading packets...", 0, 1)
+    
+    def analyse():
+        global findings_data
+        findings_data = run(current_pcap_path)
+
+    threading.Thread(target=analyse).start()
+    
+    return jsonify({"success": True})
+
+@app.route("/progress")
+def get_progress():
+    return jsonify(progress_module.get_progress())
+
+@app.route("/processing")
+def processing():
+    return render_template("processing.html", current_page="")
+
+#sends data to the main dashboard 
 @app.route("/")
 def overview():
     total = len(findings_data)
@@ -16,18 +82,18 @@ def overview():
     low = len([f for f in findings_data if f.get('Severity') == 'LOW'])
 
     #getting summary findings for top ports data
-
     summary = next((f for f in findings_data if f.get('Severity') == 'INFO'), None)
 
     high_risk_ports = list(summary.get('high_risk_port_nums', [])) if summary else []
     medium_risk_ports = list(summary.get('medium_risk_port_nums', [])) if summary else []
 
     #counts the results per scanner 
-
     scanner_counts = Counter(f.get('scanner') for f in findings_data if f.get('scanner') and f.get('Severity') != 'INFO')
 
-    #ip severity score calculator 
+    #counts number of scanners run 
+    scanners_run = len(set(f.get('scanner') for f in findings_data if f.get('scanner') and f.get('Severity') != 'INFO'))
 
+    #ip severity score calculator 
     severity_points = {"HIGH": 10, "MEDIUM": 5, "LOW":1}
     threat_scores = defaultdict(int)
     threat_highest_severity = {}
@@ -63,9 +129,11 @@ def overview():
                            scanner_counts = scanner_counts,
                            threat_labels = threat_labels,
                            threat_scores_data = threat_scores_data,
-                           threat_colours = threat_colours
+                           threat_colours = threat_colours,
+                           scanners_run = scanners_run
                            )
 
+#sends data to the syn scan page 
 @app.route("/syn")
 def syn():
     info_findings = [f for f in findings_data if f['Severity'] == 'INFO']
@@ -106,8 +174,6 @@ def threat_intel():
 def live():
     return render_template("placeholder.html", current_page="live")
 
-def start_server(findings):
-    global findings_data
-    findings_data = findings
+def start_server():
     app.run(debug=False, port=5000)
 

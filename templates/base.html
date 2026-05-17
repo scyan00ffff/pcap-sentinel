@@ -5,10 +5,19 @@
     <title>pcap-sentinel</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ url_for('static', filename='uploads.js') }} "></script>
 </head>
 <body>
     <div class="header">
         <h1>pcap-sentinel</h1>
+        <div class="header-actions">
+            <form id="upload-form" enctype="multipart/form-data">
+                <label for="pcap-upload" class="upload-btn">📂 Upload PCAP</label> 
+                <input type="file" id="pcap-upload" name="file" accept=".pcap, .pcapng" style="display: none;">
+            </form>
+            <button class="rescan-btn" id="rescan-btn">🔄 Re-scan</button>
+        </div>
+    
     </div>
     <div class="page-wrapper">
         <div class="sidebar">
