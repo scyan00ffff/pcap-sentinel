@@ -24,6 +24,19 @@ body {
     color: var(--text-dark);
 }
 
+body.dark {
+    --background: #1a1a2e;
+    --header-bg: #0f0f1a;
+    --header-text: #ffffff;
+    --sidebar-bg: #16213e;
+    --accent-blue: #2d7dd2;
+    --text-dark: #e0e0e0;
+    --text-muted: #a0a0b0;
+    --border: #2a2a4a;
+    --high-severity: #ff4444;
+    --card-bg: #16213e;
+}
+
 .header {
     background-color: var(--header-bg);
     color: var(--header-text);
@@ -315,7 +328,7 @@ tr:hover {
 }
 
 tr:nth-child(even) {
-    background-color: #f8f9fa;
+    background-color: var(--background);
 }
 
 .badge-container {
@@ -539,4 +552,18 @@ tr:nth-child(even) {
     background-color: var(--accent-blue);
     border-radius: 10px;
     transition: width 0.5s ease;
+}
+
+.dark-mode-btn {
+    background-color: transparent;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.dark-mode-btn:hover {
+    background-color: rgba(255,255,255,0.1);
 }

@@ -57,5 +57,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (document.getElementById('progress-bar')) {
             poll();
         }
+
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+    if (localStorage.getItem('darkMode') === 'enabled') {
+        document.body.classList.add('dark');
+        darkModeToggle.textContent = '☀️ Light Mode';
+    }
+
+    darkModeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark');
+        if (document.body.classList.contains('dark')) {
+            localStorage.setItem('darkMode', 'enabled');
+            darkModeToggle.textContent = '☀️ Light Mode';
+        } else {
+            localStorage.setItem('darkMode', 'disabled');
+            darkModeToggle.textContent = '🌙 Dark Mode';
+        }
+    });
+    
 });
 
