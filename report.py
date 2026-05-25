@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, jsonify 
+from flask import Flask, render_template, request, jsonify, send_file
 from collections import Counter 
 from collections import defaultdict
 import os 
 from analysis import run 
 import progress as progress_module 
 import threading 
+from pdf_report import generate_report
+from datetime import datetime 
 
 app = Flask(__name__)
 
@@ -174,6 +176,22 @@ def threat_intel():
 def live():
     return render_template("placeholder.html", current_page="live")
 
+@app.route("/download")
+def download():
+    if not findings_data:
+        return jsonify({"error": "No findings to export"}), 400
+    
+    summary = next((f for f in findings_data if f.get("Severity") == "INFO"), None)
+    pcap_filename = current_pcap_path.split("\\")[-1].split("/")[-1] if current_pcap_path else "unknown.pcap"
+
+    buffer = generate_report(findings_data, pcap_filename)
+
+    return send_file(
+        buffer,
+        mimetype='application/pdf',
+        as_attachment=True,
+        download_name=f'pcap-sentinel-report-{datetime.now().strftime("%Y%m%d-%H%M")}.pdf'
+    )
 def start_server():
     app.run(debug=False, port=5000)
 
