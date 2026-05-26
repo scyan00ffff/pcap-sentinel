@@ -7,11 +7,18 @@ import progress as progress_module
 import threading 
 from pdf_report import generate_report
 from datetime import datetime 
+import uuid
 
 app = Flask(__name__)
 
 findings_data = []
 current_pcap_path = None
+
+SESSION_ID = str(uuid.uuid4())
+
+@app.route("/session")
+def session():
+    return jsonify({"session_id": SESSION_ID})
 
 #uploads pcap file to the program from the webpage
 @app.route("/upload", methods=["POST"])
