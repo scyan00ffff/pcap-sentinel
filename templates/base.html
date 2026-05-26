@@ -46,7 +46,9 @@
             <a href="/threat-intel" class="filter-btn {% if current_page == 'threat' %}active{% endif %}">🛡️ Threat Intel</a>
             <hr class="sidebar-divider">
             <h3>Live</h3>
-            <a href="/live" class="filter-btn {% if current_page == 'live' %}active{% endif %}">📡 Live Monitor</a>
+            <a href="/live" class="filter-btn {% if current_page == 'live' %}active{% endif %}">
+                <span class="live-dot"></span> Live Monitor <span class="soon-badge">Soon</span>
+            </a>
         </div>
         <div class="main-dashboard">
             {% block content %}

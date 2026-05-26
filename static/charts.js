@@ -1,3 +1,12 @@
+const chartDefaults = {
+    color: 'oklch(0.62 0.012 250)',
+    borderColor: 'oklch(0.30 0.012 250)',
+    backgroundColor: 'transparent'
+};
+
+Chart.defaults.color = chartDefaults.color;
+Chart.defaults.borderColor = chartDefaults.borderColor;
+
 document.addEventListener('DOMContentLoaded', function() {
     const severityCanvas = document.getElementById('severityChart');
     if (severityCanvas) {
@@ -8,14 +17,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: ['HIGH', 'MEDIUM', 'LOW'],
                 datasets: [{
                     data: [high, medium, low],
-                    backgroundColor: ['#a00817','rgb(201, 111, 9)', 'rgb(1, 94, 1)']
+                    backgroundColor: ['#a00817','rgb(201, 111, 9)', 'rgb(1, 94, 1)'],
+                    borderWidth: 0
                 }]
             },
             options: {
+                animation: {
+                    duration: 800,
+                    easing: 'easeInOutQuart'
+                },
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            color: 'oklch(0.62 0.012 250)'
+                        }
                     }
                 }
             }
@@ -42,15 +59,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 }]
             },
             options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        display: false
-                    }
+                animation: {
+                    duration: 800,
+                    easing: 'easeInOutQuart'
                 },
                 scales: {
-                    y: {
+                    x: {
                         beginAtZero: true,
+                        grid: {
+                            color: 'oklch(0.25 0.010 250)'
+                        },
+                        ticks: {
+                            color: 'oklch(0.62 0.012 250)'
+                        }
+                    },
+                    y: {
+                        grid: {
+                            color: 'oklch(0.25 0.010 250)'
+                        },
+                        ticks: {
+                            color: 'oklch(0.62 0.012 250)'
+                        }
                     }
                 }
             }
@@ -67,22 +96,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 datasets: [{
                     label: 'Ports Probed',
                     data: ipCounts,
-                    backgroundColor: '#2d7dd2'
+                    backgroundColor: 'oklch(0.78 0.13 220)'
                 }]
             },
             options: {
+                animation: {
+                    duration: 800,
+                    easing: 'easeInOutQuart'
+                },
                 indexAxis: 'y',
                 responsive: true,
                 plugins: {
-                    legend: {
-                        display: false
-                    }
+                    legend: { display: false }
                 },
                 scales: {
                     x: {
                         beginAtZero: true,
+                        grid:  { color: 'oklch(0.25 0.010 250)' },
+                        ticks: { color: 'oklch(0.62 0.012 250)' }
+                    },
+                    y: {
+                        grid: { color: 'oklch(0.25 0.010 250)' },
+                        ticks: { color: 'oklch(0.62 0.012 250)', font: { family: 'Geist Mono' } }
                     }
                 }
+
             }
         });
     }
@@ -96,15 +134,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: scannerLabels,
                 datasets: [{
                     data: scannerData,
-                    backgroundColor: ['#2d7dd2', '#a00817', 'rgb(201, 111, 9)', 'rgb(1, 94, 1)']
+                    backgroundColor: ['oklch(0.78 0.13 220)', '#a00817', 'oklch(0.78 0.18 70)', 'oklch(0.72 0.14 145)'],
+                    borderWidth: 0
 
                 }]
             },
             options: {
+                animation: {
+                    duration: 800,
+                    easing: 'easeInOutQuart'
+                },
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        position: 'bottom',
+                        labels: {
+                            color: 'oklch(0.62 0.012 250)'
+                        }
                     }
                 }
             }
@@ -125,17 +171,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 }]
             },
             options: {
+                animation: {
+                    duration: 800,
+                    easing: 'easeInOutQuart'
+                },
                 indexAxis: 'y',
                 responsive: true,
                 plugins: {
-                    legend: {
-                        display: false
-                    }
+                    legend: { display: false}
                 },
                 scales: {
                     x: {
                         beginAtZero: true,
-                        max: 100
+                        max: 100,
+                        grid: { color: 'oklch(0.25 0.010 250)' },
+                        ticks: { color: 'oklch(0.62 0.012 250)' }
+                    },
+                    y: {
+                        grid: { color: 'oklch(0.25 0.010 250)' },
+                        ticks: { color: 'oklch(0.62 0.012 250)', font: { family: 'Geist Mono' } }
                     }
                 }
             }

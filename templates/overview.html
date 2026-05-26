@@ -1,29 +1,51 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2 class="page-title">Overview Dashboard</h2>
+<div class="crumbs">
+    <span> /  pcap-sentinel</span>
+    <span class="sep"></span>
+    <span style="color: var(--fg-2)"> /  overview</span>
+</div>
+<div class="page-head">
+    <div>
+        <div class="page-title">Overview</div>
+        <div class="page-sub">Aggregated findings across all scanners</div>
+    </div>
+</div>
+
 <div class="summary-cards">
     <div class="card">
         <h3>Total Findings</h3>
-        <p class="card-number">{{ total }}</p>
+        <p class="card-number {% if not has_data %}skel{% endif %}">
+            {% if has_data %}{{ total }}{% else %}000{% endif %}
+        </p>
     </div>
     <div class="card">
         <h3>High Severity <span class="tooltip-icon" title="IP scanned 50+ ports and targeted high risk services such as SSH, RDP or SMB">?</span></h3>
-        <p class="card-number high">{{ high }}</p>
+        <p class="card-number {% if has_data %}high{% else %}skel{% endif %}">
+            {% if has_data %}{{ high }}{% else %}000{% endif %}
+        </p>
     </div>
     <div class="card">
         <h3>Medium Severity <span class="tooltip-icon" title="IP scanned 50+ ports and targeted medium risk services such as development servers or alternative HTTP ports">?</span></h3>
-        <p class="card-number medium">{{ medium }}</p>
+        <p class="card-number {% if has_data %}medium{% else %}skel{% endif %}">
+            {% if has_data %}{{ medium }}{% else %}000{% endif %}
+        </p>
     </div>
     <div class="card">
         <h3>Low Severity <span class="tooltip-icon" title="IP scanned 50+ ports but only targeted unknown or low risk ports">?</span></h3>
-        <p class="card-number low">{{ low }}</p>
+        <p class="card-number {% if has_data %}low{% else %}skel{% endif %}">
+            {% if has_data %}{{ low }}{% else %}000{% endif %}
+        </p>
     </div>
     <div class="card">
         <h3>Scanners Run</h3>
-        <p class="card-number">{{ scanners_run }}</p>
+        <p class="card-number {% if not has_data %}skel{% endif %}">
+            {% if has_data %}{{ scanners_run }}{% else %}000{% endif %}
+        </p>
     </div>
 </div>
+
 <div class="charts">
     <div class="chart-card">
         <h3>Severity Breakdown</h3>

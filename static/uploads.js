@@ -115,4 +115,24 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem('statusState', type || '');
     }
 
+    function countUp(element, target, duration = 1000) {
+        const start = 0;
+        const increment = target / (duration / 16);
+        let current = start;
+        const timer = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+                current = target;
+                clearInterval(timer);
+            }
+            element.textContent = Math.floor(current).toLocaleString();
+        }, 16);
+    }
+
+    //trigger the count up animation on all headline numbers
+    document.querySelectorAll('.headline-number, .card-number').forEach(el => {
+        const target = parseInt(el.textContent.replace(/,/g, ''));
+        if (!isNaN(target)) countUp(el, target);
+    })
+
 });

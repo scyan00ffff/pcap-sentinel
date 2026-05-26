@@ -1,26 +1,51 @@
 {% extends "base.html" %}
 
 {% block content %}
+<div class="crumbs">
+    <span> /  pcap-sentinel</span>
+    <span class="sep"></span>
+    <span> /  detectors</span>
+    <span style="color: var(--fg-2)"> /  syn-scan</span>
+</div>
+<div class="page-head">
+    <div>
+        <div class="page-title">SYN Scan</div>
+        <div class="page-sub">Detects single source IPs probing many distinct destination ports - a hallmark of network reconnaisance</div>
+    </div>
+    <div class="page-head-actions">
+        <a href="/download" class="rescan-btn">⬇ Export Report</a>
+    </div>
+</div>
 <div class="summary-cards">
     <div class="card">
         <h3>Total Findings</h3>
-        <p class="card-number">{{ findings|length }}</p>
+        <p class="card-number {% if not has_data %}skel{% endif %}">
+            {% if has_data %}{{ total }}{% else %}000{% endif %}
+        </p>
     </div>
     <div class="card">
         <h3>High Severity <span class="tooltip-icon" title="IP scanned 50+ ports and targeted high risk services such as SSH, RDP or SMB">?</span></h3>
-        <p class="card-number high">{{ findings|selectattr("Severity", "equalto", "HIGH")|list|length }}</p>
+        <p class="card-number {% if has_data %}high{% else %}skel{% endif %}">
+            {% if has_data %}{{ high }}{% else %}000{% endif %}
+        </p>
     </div>
     <div class="card">
         <h3>Medium Severity <span class="tooltip-icon" title="IP scanned 50+ ports and targeted medium risk services such as development servers or alternative HTTP ports">?</span></h3>
-        <p class="card-number medium">{{ findings|selectattr("Severity", "equalto", "MEDIUM")|list|length }}</p>
+        <p class="card-number {% if has_data %}medium{% else %}skel{% endif %}">
+            {% if has_data %}{{ medium }}{% else %}000{% endif %}
+        </p>
     </div>
     <div class="card">
         <h3>Low Severity <span class="tooltip-icon" title="IP scanned 50+ ports but only targeted unknown or low risk ports">?</span></h3>
-        <p class="card-number low">{{ findings|selectattr("Severity", "equalto", "LOW")|list|length }}</p>
+        <p class="card-number {% if has_data %}low{% else %}skel{% endif %}">
+            {% if has_data %}{{ low }}{% else %}000{% endif %}
+        </p>
     </div>
     <div class="card">
         <h3>Scanners Run</h3>
-        <p class="card-number">1</p>
+        <p class="card-number {% if not has_data %}skel{% endif %}">
+            {% if has_data %}{{ scanners_run }}{% else %}000{% endif %}
+        </p>
     </div>
 </div>
 
@@ -86,8 +111,8 @@
             <th>Detail</th>
         </tr>
         {% for finding in findings %}
-        <tr class="finding-row" onclick="toggleDetail(this)">
-            <td class="severity-{{ finding["Severity"] | lower }}">{{ finding["Severity"] }}</td>
+        <tr class="finding-row" onclick="toggleDetail(this)" style="animation-delay: {{ loop.index * 0.03 }}s">
+            <td><span class="sev-tag {{ finding["Severity"] | lower }}">{{ finding["Severity"] }}</span></td>
             <td>{{ finding["Description"] }}</td>
             <td class="expand-hint">Click to expand</td>
         </tr>

@@ -13,6 +13,7 @@ app = Flask(__name__)
 
 findings_data = []
 current_pcap_path = None
+has_data = False
 
 SESSION_ID = str(uuid.uuid4())
 
@@ -46,8 +47,9 @@ def upload():
 
 
     def analyse():
-        global findings_data
+        global findings_data, has_data
         findings_data = run(temp_path)
+        has_data = len(findings_data) > 0
 
     threading.Thread(target=analyse).start()
 
@@ -57,7 +59,7 @@ def upload():
 @app.route("/rescan", methods=['POST'])
 def rescan():
     global findings_data
-
+    global has_data 
     if current_pcap_path is None:
         return jsonify({"success": False, "error": "No file loaded"})
     
@@ -65,8 +67,9 @@ def rescan():
     progress_module.update_progress("Loading packets...", 0, 1)
     
     def analyse():
-        global findings_data
+        global findings_data, has_data
         findings_data = run(current_pcap_path)
+        has_data = len(findings_data) > 0
 
     threading.Thread(target=analyse).start()
     
@@ -139,7 +142,8 @@ def overview():
                            threat_labels = threat_labels,
                            threat_scores_data = threat_scores_data,
                            threat_colours = threat_colours,
-                           scanners_run = scanners_run
+                           scanners_run = scanners_run,
+                           has_data = has_data
                            )
 
 #sends data to the syn scan page 
@@ -148,12 +152,27 @@ def syn():
     info_findings = [f for f in findings_data if f['Severity'] == 'INFO']
     high_low_findings = [f for f in findings_data if f['Severity'] != 'INFO']
     summary = info_findings[0] if info_findings else None
+
+    high = len([f for f in high_low_findings if f.get('Severity') == 'HIGH'])
+    medium = len([f for f in high_low_findings if f.get('Severity') == 'MEDIUM'])
+    low = len([f for f in high_low_findings if f.get('Severity') == 'LOW'])
+    total = high + medium + low
+    scanners_run = len(set(f.get('scanner') for f in findings_data if f.get('scanner') and f.get('Severity') != 'INFO'))
+
     return render_template("syn.html",
                             findings = high_low_findings,
                             summary=summary,
                             current_page = "syn",
                             high_risk_ports =list(summary['high_risk_port_nums']) if summary else [],
-                            medium_risk_ports = list(summary['medium_risk_port_nums']) if summary else [])
+                            medium_risk_ports = list(summary['medium_risk_port_nums']) if summary else [],
+                            has_data = has_data,
+                            high = high,
+                            medium = medium,
+                            low = low,
+                            total = total,
+                            scanners_run = scanners_run
+                            )
+    
 
 @app.route("/credential-detection")
 def credential_detection():
